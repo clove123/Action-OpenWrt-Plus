@@ -84,3 +84,4 @@ pushd feeds/packages/libs
 rm -rf libssh
 svn co https://github.com/openwrt/packages/trunk/libs/libssh
 popd
+git clone -b luci18 https://github.com/gproject-lede/openwrt-app.git
