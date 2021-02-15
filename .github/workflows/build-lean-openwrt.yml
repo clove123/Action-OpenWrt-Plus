@@ -69,7 +69,7 @@ jobs:
 
     - name: Install Feeds
       run: |
-        cd $OPENWRTROOT
+        cd openwrt
         ./scripts/feeds install -a
 
     - name: Load Custom Configuration
@@ -78,7 +78,7 @@ jobs:
         [ -e files ] && mv files $OPENWRTROOT/files
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE $OPENWRTROOT/.config
         chmod +x $DIY_SH
-        cd $OPENWRTROOT
+        cd openwrt
         ../$DIY_SH
 
     - name: SSH Connection To Actions
@@ -88,7 +88,7 @@ jobs:
     - name: Download Package
       id: package
       run: |
-        cd $OPENWRTROOT
+        cd openwrt
         if "$KMODS_IN_FIRMWARE" = 'true'
         then
             echo "CONFIG_ALL_KMODS=y" >> .config
@@ -101,7 +101,7 @@ jobs:
     - name: Compile Packages
       id: compile
       run: |
-        cd $OPENWRTROOT
+        cd openwrt
         echo -e "$(nproc) thread compile"
         make tools/compile -j$(nproc) || make tools/compile -j1 V=s
         make toolchain/compile -j$(nproc) || make toolchain/compile -j1 V=s
@@ -114,10 +114,10 @@ jobs:
     - name: Set Environment Variable
       if: steps.compile.outputs.status == 'success'
       run: |
-        cd $OPENWRTROOT/bin/packages/*
+        cd openwrt/bin/packages/*
         PLATFORM=$(basename `pwd`)
         echo "::set-env name=PLATFORM::$PLATFORM"
-        cd $OPENWRTROOT/bin/targets/*
+        cd openwrt/bin/targets/*
         TARGET=$(basename `pwd`)
         echo "::set-env name=TARGET::$TARGET"
         cd *
@@ -129,7 +129,7 @@ jobs:
       if: steps.compile.outputs.status == 'success'
       id: generate
       run: |
-        cd $OPENWRTROOT
+        cd openwrt
         mkdir -p files/etc/opkg
         if "$KMODS_IN_FIRMWARE" = 'true'
         then
